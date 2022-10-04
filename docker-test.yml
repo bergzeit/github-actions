@@ -1,0 +1,53 @@
+name: Build container and run tests
+
+# Example usage:
+#
+# jobs:
+#   test:
+#     uses: bergzeit/github-actions/docker-test.yml@v1
+#     with:
+#       command: make test
+
+on:
+  workflow_call:
+    inputs:
+      command:
+        description: Test command to run inside the container
+        type: string
+        required: true
+      image_name:
+        description: Name of the intermediary image to build (will not be pushed anywhere)
+        type: string
+        required: false
+        default: temporary-image
+      image_build_target:
+        description: Target stage (as in Dockerfile) to build
+        type: string
+        required: false
+
+jobs:
+  test:
+    name: Run tests inside docker container
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          target: ${{ inputs.image_build_target }}
+          load: true
+          tags: ${{ inputs.image_name }}
+          cache-from: type=gha
+          cache-to: type=gha
+
+      - name: Run tests
+        run: docker run ${{ inputs.image_name }} ${{ inputs.command }}
