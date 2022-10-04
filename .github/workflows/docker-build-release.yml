@@ -4,7 +4,7 @@ name: Build docker image and release it to container registry
 #
 # jobs:
 #   build-and-release:
-#     uses: bergzeit/github-actions/docker-build-release.yml@v1
+#     uses: bergzeit/github-actions/.github/workflows/docker-build-release.yml@v1
 #     secrets:
 #       registry_password: ${{ secrets.GITHUB_TOKEN }}
 

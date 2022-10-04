@@ -4,7 +4,7 @@ name: Build container and run tests
 #
 # jobs:
 #   test:
-#     uses: bergzeit/github-actions/docker-test.yml@v1
+#     uses: bergzeit/github-actions/.github/workflows/docker-test.yml@v1
 #     with:
 #       command: make test
 
