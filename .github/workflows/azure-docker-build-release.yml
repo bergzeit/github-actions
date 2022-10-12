@@ -37,6 +37,15 @@ on:
         description: Target stage (as in Dockerfile) to build
         type: string
         required: false
+      image_tag_rules:
+        description: the rules how image tags will be generated
+        type: string
+        required: false
+        default: |
+            type=schedule
+            type=ref,event=branch
+            type=semver,pattern={{version}} # only semver.org compliant tags will be used
+            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'develop') }} # set latest tag for develop branch (bergzeit default)
     secrets:
       azure_client_id:
         description: Client ID of the Azure App Registration associated with this repository
@@ -80,6 +89,7 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: ${{ inputs.registry_url }}/${{ inputs.image_name }}
+          tags: ${{ inputs.image_tag_rules }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
