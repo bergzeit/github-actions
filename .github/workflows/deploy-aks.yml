@@ -6,13 +6,13 @@ name: Deploy k8s manifests to aks
 #   deploy-aks:
 #     uses: bergzeit/github-actions/.github/workflows/deploy-aks.yml@v1
 #     with:
-#       azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
-#       azure_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-#       azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
 #       aks_cluster_name: ${{ secrets.AZURE_CLUSTER_NAME }}
 #       aks_resource_group: ${{ secrets.AZURE_RESOURCE_GROUP }}
 #       k8s_namespace: ${{ secrets.K8S_NAMESPACE }}
 #     secrets:
+#       azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
+#       azure_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+#       azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
 #       azure_credentials: ${{ secrets.AZURE_CREDENTIALS }}
 #       registry_username: ${{ secrets.REGISTRY_USERNAME }}
 #       registry_password: ${{ secrets.REGISTRY_PASSWORD }}
@@ -23,18 +23,6 @@ name: Deploy k8s manifests to aks
 on:
   workflow_call:
     inputs:
-      azure_client_id:
-        description: Client ID of the Azure App Registration associated with this repository
-        required: true
-        type: string
-      azure_subscription_id:
-        description: The aks cluster subscription
-        required: true
-        type: string
-      azure_tenant_id:
-        description: Tenant ID of the Azure App Registration associated with this repository
-        required: true
-        type: string
       aks_cluster_name:
         description: The name of the cluster to deploy to
         required: true
@@ -67,6 +55,15 @@ on:
         required: false
         default: bergzeit.azurecr.io
     secrets:
+      azure_client_id:
+        description: Client ID of the Azure App Registration associated with this repository
+        required: true
+      azure_subscription_id:
+        description: The aks cluster subscription
+        required: true
+      azure_tenant_id:
+        description: Tenant ID of the Azure App Registration associated with this repository
+        required: true
       azure_credentials:
         description: An Azure Active Directory service principals (https://github.com/Azure/aks-set-context/tree/releases/v1#azure-credentials)
         required: true
@@ -98,7 +95,7 @@ jobs:
         with:
             client-id: ${{ secrets.azure_client_id }}
             tenant-id: ${{ secrets.azure_tenant_id }}
-            subscription-id: ${{ inputs.azure_subscription_id }}
+            subscription-id: ${{ secrets.azure_subscription_id }}
       # set an active azure k8s context
       - name: Set aks context
         uses: azure/aks-set-context@v1
@@ -106,7 +103,7 @@ jobs:
           creds: "${{ secrets.azure_credentials }}"
           resource-group: "${{ inputs.aks_resource_group }}"
           cluster-name: "${{ inputs.aks_cluster_name }}"
-          subscription: "${{ inputs.azure_subscription_id }}"
+          subscription: "${{ secrets.azure_subscription_id }}"
         id: login
       # create an image pull secret for acr access for the following aks deployment
       - name: Create image pull secret
