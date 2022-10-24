@@ -26,12 +26,15 @@ on:
       azure_client_id:
         description: Client ID of the Azure App Registration associated with this repository
         required: true
+        type: string
       azure_subscription_id:
         description: The aks cluster subscription
         required: true
+        type: string
       azure_tenant_id:
         description: Tenant ID of the Azure App Registration associated with this repository
         required: true
+        type: string
       aks_cluster_name:
         description: The name of the cluster to deploy to
         required: true
@@ -43,17 +46,21 @@ on:
       images:
         description: Fully qualified resource URL of the image(s) to be used for substitutions on the manifest files.
         required: false
+        type: string
       imagepull_secret_name:
         description: The name of the image pull secret
         required: false
         default: imagepull-acr
+        type: string
       k8s_manifests:
         description: The directory of the k8s manifest files. Defaults to ./k8s
         required: false
         default: "k8s"
+        type: string
       k8s_namespace:
         description: The namespace to deploy to
         required: true
+        type: string
       registry_url:
         description: URL of the container registry that the image will be pushed to
         type: string
