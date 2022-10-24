@@ -1,0 +1,124 @@
+name: Deploy k8s manifests to aks
+
+# Example usage:
+# 
+# jobs:
+#   deploy-aks:
+#     uses: bergzeit/github-actions/.github/workflows/deploy-aks.yml@v1
+#     with:
+#       azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
+#       azure_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+#       azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+#       aks_cluster_name: ${{ secrets.AZURE_CLUSTER_NAME }}
+#       aks_resource_group: ${{ secrets.AZURE_RESOURCE_GROUP }}
+#       k8s_namespace: ${{ secrets.K8S_NAMESPACE }}
+#     secrets:
+#       azure_credentials: ${{ secrets.AZURE_CREDENTIALS }}
+#       registry_username: ${{ secrets.REGISTRY_USERNAME }}
+#       registry_password: ${{ secrets.REGISTRY_PASSWORD }}
+#     
+# Only required values are mentioned in the example. For optional values please
+# check the action definition directly.
+
+on:
+  workflow_call:
+    inputs:
+      azure_client_id:
+        description: Client ID of the Azure App Registration associated with this repository
+        required: true
+      azure_subscription_id:
+        description: The aks cluster subscription
+        required: true
+      azure_tenant_id:
+        description: Tenant ID of the Azure App Registration associated with this repository
+        required: true
+      aks_cluster_name:
+        description: The name of the cluster to deploy to
+        required: true
+        type: string
+      aks_resource_group:
+        description: The resource group of the aks to deploy to
+        required: true
+        type: string
+      images:
+        description: Fully qualified resource URL of the image(s) to be used for substitutions on the manifest files.
+        required: false
+      imagepull_secret_name:
+        description: The name of the image pull secret
+        required: false
+        default: imagepull-acr
+      k8s_manifests:
+        description: The directory of the k8s manifest files. Defaults to ./k8s
+        required: false
+        default: "k8s"
+      k8s_namespace:
+        description: The namespace to deploy to
+        required: true
+      registry_url:
+        description: URL of the container registry that the image will be pushed to
+        type: string
+        required: false
+        default: bergzeit.azurecr.io
+    secrets:
+      azure_credentials:
+        description: An Azure Active Directory service principals (https://github.com/Azure/aks-set-context/tree/releases/v1#azure-credentials)
+        required: true
+      registry_username:
+        description: The username for acr
+        required: true
+      registry_password:
+        description: The password for acr
+        required: true
+
+jobs:
+  deploy-aks:
+    name: Deploy a docker manifest from acr to aks
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+      actions: read
+    steps:
+      # install the kubectl cmd line tool because it is required in later steps
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: "latest"
+        id: install
+      # log in to azure for the following context creation
+      - name: Authenticate with Azure
+        uses: azure/login@v1
+        with:
+            client-id: ${{ secrets.azure_client_id }}
+            tenant-id: ${{ secrets.azure_tenant_id }}
+            subscription-id: ${{ inputs.azure_subscription_id }}
+      # set an active azure k8s context
+      - name: Set aks context
+        uses: azure/aks-set-context@v1
+        with:
+          creds: "${{ secrets.azure_credentials }}"
+          resource-group: "${{ inputs.aks_resource_group }}"
+          cluster-name: "${{ inputs.aks_cluster_name }}"
+          subscription: "${{ inputs.azure_subscription_id }}"
+        id: login
+      # create an image pull secret for acr access for the following aks deployment
+      - name: Create image pull secret
+        uses: Azure/k8s-create-secret@v1.1
+        with:
+          container-registry-url: ${{ inputs.registry_url }}
+          container-registry-username: ${{ secrets.registry_username }}
+          container-registry-password: ${{ secrets.registry_password }}
+          secret-name: ${{ inputs.imagepull_secret_name }}
+      # deploy to the aks cluster
+      - name: Deploy to aks
+        uses: Azure/k8s-deploy@v3.1
+        with:
+          action: deploy
+          strategy: basic
+          namespace: ${{ inputs.k8s_namespace }}
+          manifests: |
+            ${{ inputs.k8s_manifests }}
+          images: |
+            ${{ inputs.images }}
+          imagepullsecrets: |
+            ${{ inputs.imagepull_secret_name }}
