@@ -100,7 +100,5 @@ jobs:
           action: deploy
           strategy: basic
           namespace: ${{ inputs.k8s_namespace }}
-          manifests: |
-            ${{ inputs.k8s_manifests }}
-          images: |
-            ${{ inputs.images }}
+          manifests: ${{ inputs.k8s_manifests }}
+          images: ${{ inputs.images }}
