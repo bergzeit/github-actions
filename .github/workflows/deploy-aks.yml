@@ -74,6 +74,8 @@ jobs:
       contents: read
       actions: read
     steps:
+      # first check out the repository for file access to k8s manifests in the deploy process
+      - uses: actions/checkout@v3
       # install the kubectl cmd line tool because it is required in later steps
       - name: Set up kubectl
         uses: azure/setup-kubectl@v3.0
