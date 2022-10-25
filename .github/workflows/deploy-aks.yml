@@ -13,8 +13,6 @@ name: Deploy k8s manifests to aks
 #       azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
 #       aks_subscription_id: ${{ secrets.AKS_SUBSCRIPTION_ID }}
 #       azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
-#       registry_username: ${{ secrets.REGISTRY_USERNAME }}
-#       registry_password: ${{ secrets.REGISTRY_PASSWORD }}
 #     
 # Only required values are mentioned in the example. For optional values please
 # check the action definition directly.
@@ -62,12 +60,6 @@ on:
         required: true
       azure_tenant_id:
         description: Tenant ID of the Azure App Registration associated with this repository
-        required: true
-      registry_username:
-        description: The username for acr
-        required: true
-      registry_password:
-        description: The password for acr
         required: true
 
 jobs:
