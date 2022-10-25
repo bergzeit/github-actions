@@ -40,7 +40,7 @@ on:
       k8s_manifests:
         description: The directory of the k8s manifest files. Defaults to ./k8s
         required: false
-        default: "k8s"
+        default: "k8s/"
         type: string
       k8s_namespace:
         description: The namespace to deploy to
