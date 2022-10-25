@@ -61,6 +61,9 @@ on:
       azure_tenant_id:
         description: Tenant ID of the Azure App Registration associated with this repository
         required: true
+      azure_client_secret:
+        description: The client secret for the azure login
+        required: true
 
 jobs:
   deploy-aks:
