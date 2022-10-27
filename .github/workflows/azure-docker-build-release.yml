@@ -7,13 +7,14 @@ name: Build docker image and release it to Azure container registry
 #     uses: bergzeit/github-actions/.github/workflows/azure-docker-build-release.yml@v1
 #     secrets:
 #       azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
+#       azure_client_secret: ${{ secrets.AZURE_CLIENT_SECRET }}
 #       azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
-#       azure_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+#       aks_subscription_id: ...
 #
 # Note: The example expects the following secrets to be configured in the repository using this workflow:
 # - AZURE_CLIENT_ID
+# - AZURE_CLIENT_SECRET
 # - AZURE_TENANT_ID
-# - AZURE_SUBSCRIPTION_ID
 
 on:
   workflow_call:
@@ -50,11 +51,14 @@ on:
       azure_client_id:
         description: Client ID of the Azure App Registration associated with this repository
         required: true
+      azure_client_secret:
+        description: The client secret for the azure login
+        required: true
       azure_tenant_id:
         description: Tenant ID of the Azure App Registration associated with this repository
         required: true
-      azure_subscription_id:
-        description: Tenant ID of the Azure App Registration associated with this repository
+      aks_subscription_id:
+        description: The aks cluster subscription id
         required: true
 
 jobs:
@@ -73,11 +77,9 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Authenticate with Azure
-        uses: azure/login@v1
+        uses: Azure/login@v1.4.6
         with:
-            client-id: ${{ secrets.azure_client_id }}
-            tenant-id: ${{ secrets.azure_tenant_id }}
-            subscription-id: ${{ secrets.azure_subscription_id }}
+          creds: '{"clientId":"${{ secrets.azure_client_id }}","clientSecret":"${{ secrets.azure_client_secret }}","subscriptionId":"${{ secrets.aks_subscription_id }}","tenantId":"${{ secrets.azure_tenant_id }}"}'
 
       - name: Authenticate with Azure container registry
         run: |
