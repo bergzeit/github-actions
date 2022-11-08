@@ -30,6 +30,15 @@ on:
         description: Target stage (as in Dockerfile) to build
         type: string
         required: false
+      image_tag_rules:
+        description: the rules how image tags will be generated
+        type: string
+        required: false
+        default: |
+          type=schedule
+          type=sha  # short commit hash
+          type=ref,event=tag  # raw tag
+          type=raw,value=latest,enable={{ is_default_branch }}  # "latest" on project-specific default branch
     secrets:
       registry_password:
         description: Password to log into registry
@@ -62,6 +71,7 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: ${{ inputs.registry }}/${{ inputs.image_name }}
+          tags: ${{ inputs.image_tag_rules }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
