@@ -1,7 +1,7 @@
 name: Deploy k8s manifests to aks
 
 # Example usage:
-# 
+#
 # jobs:
 #   deploy-aks:
 #     uses: bergzeit/github-actions/.github/workflows/deploy-aks.yml@v1
@@ -9,12 +9,13 @@ name: Deploy k8s manifests to aks
 #       aks_cluster_name: ${{ secrets.AZURE_CLUSTER_NAME }}
 #       aks_resource_group: ${{ secrets.AZURE_RESOURCE_GROUP }}
 #       k8s_namespace: ${{ secrets.K8S_NAMESPACE }}
+#       helm_chart: "./my-chart-path"
 #     secrets:
 #       azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
 #       azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
 #       azure_client_secret: "${{ secrets.AZURE_CLIENT_SECRET }}"
 #       aks_subscription_id: ${{ secrets.AKS_SUBSCRIPTION_ID }}
-#     
+#
 # Only required values are mentioned in the example. For optional values please
 # check the action definition directly.
 
@@ -52,6 +53,26 @@ on:
         type: string
         required: false
         default: bergzeit.azurecr.io
+      helm_chart:
+        description: The path to the helm chart
+        type: string
+        required: true
+      helm_override_files:
+        description: Array of path to override files. Each path should be mentioned on a newline
+        type: string
+        required: false
+      helm_overrides:
+        description: Override values to set
+        type: string
+        required: false
+      helm_release_name:
+        description: Release name to be used for Helm option
+        type: string
+        required: false
+      helm_arguments:
+        description: Arguments to be passed to the Helm or template command
+        type: string
+        required: false
     secrets:
       azure_client_id:
         description: Client ID of the Azure App Registration associated with this repository
@@ -96,12 +117,25 @@ jobs:
           cluster-name: "${{ inputs.aks_cluster_name }}"
           subscription: "${{ secrets.aks_subscription_id }}"
         id: login
+      - name: Bake helm template
+        uses: Azure/k8s-bake@v2.2
+        with:
+          renderEngine: "helm"
+          helmChart: "${{ inputs.helm_chart }}"
+          helm-version: "latest"
+          namespace: "${{ inputs.k8s_namespace }}"
+          arguments: "${{ inputs.helm_arguments }}"
+          overrideFiles: "${{ inputs.helm_override_files }}"
+          overrides: "${{ inputs.helm_overrides }}"
+          releaseName: "${{ inputs.helm_release_name }}"
+          silent: "false"
+        id: bake
       # deploy to the aks cluster
       - name: Deploy to aks
         uses: Azure/k8s-deploy@v4.5
         with:
+          manifests: ${{ steps.bake.outputs.manifestsBundle }}
           action: deploy
           strategy: basic
           namespace: "${{ inputs.k8s_namespace }}"
-          manifests: "${{ inputs.k8s_manifests }}"
           images: "${{ inputs.images }}"
