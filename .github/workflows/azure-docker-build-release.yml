@@ -55,19 +55,19 @@ on:
       build_args:
         type: string
         required: false
-    secrets:
-      azure_client_id:
-        description: Client ID of the Azure App Registration associated with this repository
-        required: true
-      azure_client_secret:
-        description: The client secret for the azure login
-        required: true
-      azure_tenant_id:
-        description: Tenant ID of the Azure App Registration associated with this repository
-        required: true
-      aks_subscription_id:
-        description: The aks cluster subscription id
-        required: true
+#    secrets:
+#      azure_client_id:
+#        description: Client ID of the Azure App Registration associated with this repository
+#        required: true
+#      azure_client_secret:
+#        description: The client secret for the azure login
+#        required: true
+#      azure_tenant_id:
+#        description: Tenant ID of the Azure App Registration associated with this repository
+#        required: true
+#      aks_subscription_id:
+#        description: The aks cluster subscription id
+#        required: true
 
 jobs:
   azure-build-and-release:
@@ -88,7 +88,7 @@ jobs:
       - name: Authenticate with Azure
         uses: Azure/login@v1.4.6
         with:
-          creds: '{"clientId":"${{ secrets.azure_client_id }}","clientSecret":"${{ secrets.azure_client_secret }}","subscriptionId":"${{ secrets.aks_subscription_id }}","tenantId":"${{ secrets.azure_tenant_id }}"}'
+          creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","subscriptionId":"${{ secrets.AKS_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'
 
       - name: Authenticate with Azure container registry
         run: |
