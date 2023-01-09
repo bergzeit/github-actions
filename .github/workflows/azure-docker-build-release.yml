@@ -19,6 +19,11 @@ name: Build docker image and release it to Azure container registry
 on:
   workflow_call:
     inputs:
+      environment:
+        description: Name of the environment to deploy to
+        type: string
+        required: false
+        default: staging
       registry_url:
         description: URL of the container registry that the image will be pushed to
         type: string
@@ -67,6 +72,7 @@ on:
 jobs:
   azure-build-and-release:
     name: Build docker image and release it to Azure container registry
+    environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
