@@ -92,6 +92,8 @@ jobs:
 
       - name: Authenticate with Azure container registry
         run: |
+          echo registry: ${{ inputs.registry_name }}
+          echo AKS_SUBSCRIPTION_ID: ${{ secrets.AKS_SUBSCRIPTION_ID }}
           az account show
           az acr login --name ${{ inputs.registry_name }}
 
