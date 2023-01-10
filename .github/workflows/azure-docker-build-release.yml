@@ -82,7 +82,7 @@ jobs:
       - name: Authenticate with Azure
         uses: Azure/login@v1.4.6
         with:
-          creds: '{"clientId":"${{ secrets.azure_client_id }}","clientSecret":"${{ secrets.azure_client_secret }}","subscriptionId":"${{ secrets.acr_subscription_id }}","tenantId":"${{ secrets.azure_tenant_id }}"}'
+          creds: '{"clientId":"${{ secrets.azure_client_id }}","clientSecret":"${{ secrets.azure_client_secret }}","subscriptionId":"${{ secrets.aks_subscription_id }}","tenantId":"${{ secrets.azure_tenant_id }}"}'
 
       - name: Authenticate with Azure container registry
         run: |
