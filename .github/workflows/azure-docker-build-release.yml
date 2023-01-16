@@ -51,6 +51,9 @@ on:
         type: string
         required: false
     secrets:
+      GH_ACCESS_TOKEN:
+        description: The github access token for private repository access
+        required: false
       azure_client_id:
         description: Client ID of the Azure App Registration associated with this repository
         required: true
@@ -104,6 +107,8 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          build-args: ${{ inputs.build_args }}
           cache-from: type=gha
           cache-to: type=gha
+          build-args: |
+            GH_ACCESS_TOKEN=${{ secrets.GH_ACCESS_TOKEN }}
+            ${{ inputs.build_args }}
