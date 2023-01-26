@@ -6,9 +6,9 @@ name: Build docker image and release it to Azure container registry
 #   build-and-release:
 #     uses: bergzeit/github-actions/.github/workflows/azure-docker-build-release.yml@v1
 #     secrets:
-#       azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
+#       azure_client_id: ${{ vars.AZURE_CLIENT_ID }}
 #       azure_client_secret: ${{ secrets.AZURE_CLIENT_SECRET }}
-#       azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+#       azure_tenant_id: ${{ vars.AZURE_TENANT_ID }}
 #       aks_subscription_id: ...
 #
 # Note: The example expects the following secrets to be configured in the repository using this workflow:
@@ -48,6 +48,18 @@ on:
           type=ref,event=tag  # raw tag
           type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'develop') }} 
           type=raw,value=latest,enable={{ is_default_branch }} # "latest" on project-specific default branch
+      azure_tenant_id:
+        description: Tenant ID of the Azure App Registration associated with this repository
+        type: string
+        required: true
+      azure_client_id:
+        description: Client ID of the Azure App Registration associated with this repository
+        type: string
+        required: true
+      azure_subscription_id:
+        description: The azure subscription id
+        type: string
+        required: true
       build_args:
         type: string
         required: false
@@ -55,17 +67,8 @@ on:
       GH_ACCESS_TOKEN:
         description: The github access token for private repository access
         required: false
-      azure_client_id:
-        description: Client ID of the Azure App Registration associated with this repository
-        required: true
       azure_client_secret:
         description: The client secret for the azure login
-        required: true
-      azure_tenant_id:
-        description: Tenant ID of the Azure App Registration associated with this repository
-        required: true
-      aks_subscription_id:
-        description: The aks cluster subscription id
         required: true
 
 jobs:
@@ -86,7 +89,7 @@ jobs:
       - name: Authenticate with Azure
         uses: Azure/login@v1.4.6
         with:
-          creds: '{"clientId":"${{ secrets.azure_client_id }}","clientSecret":"${{ secrets.azure_client_secret }}","subscriptionId":"${{ secrets.aks_subscription_id }}","tenantId":"${{ secrets.azure_tenant_id }}"}'
+          creds: '{"clientId":"${{ inputs.azure_client_id }}","clientSecret":"${{ secrets.azure_client_secret }}","subscriptionId":"${{ inputs.azure_subscription_id }}","tenantId":"${{ inputs.azure_tenant_id }}"}'
 
       - name: Authenticate with Azure container registry
         run: |
