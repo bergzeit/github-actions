@@ -38,6 +38,9 @@ on:
           type=schedule
           type=sha  # short commit hash
           type=ref,event=tag  # raw tag
+          type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }} # "latest" on main branch
+          type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'master') }} # "latest" on master branch
+          type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'develop') }} # "latest" on develop branch
           type=raw,value=latest,enable={{ is_default_branch }}  # "latest" on project-specific default branch
     secrets:
       GH_ACCESS_TOKEN:
