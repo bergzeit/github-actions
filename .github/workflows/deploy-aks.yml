@@ -109,13 +109,18 @@ jobs:
         uses: Azure/login@v1.4.6
         with:
           creds: '{"clientId":"${{ secrets.azure_client_id }}","clientSecret":"${{ secrets.azure_client_secret }}","subscriptionId":"${{ secrets.aks_subscription_id }}","tenantId":"${{ secrets.azure_tenant_id }}"}'
-      # set an active azure k8s context
+      - name: Set up kubelogin for non-interactive login
+        uses: azure/use-kubelogin@v1
+        with:
+           kubelogin-version: 'latest'
+          # set an active azure k8s context
       - name: Set aks context
         uses: azure/aks-set-context@v3.2
         with:
           resource-group: "${{ inputs.aks_resource_group }}"
           cluster-name: "${{ inputs.aks_cluster_name }}"
           subscription: "${{ secrets.aks_subscription_id }}"
+          use-kubelogin: true 
         id: login
       - name: Bake helm template
         uses: Azure/k8s-bake@v2.2
