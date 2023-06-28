@@ -112,7 +112,7 @@ jobs:
       - name: Set up kubelogin for non-interactive login
         uses: azure/use-kubelogin@v1
         with:
-           kubelogin-version: 'latest'
+           kubelogin-version: 'v0.0.30' #TODO should be updated regularly 
           # set an active azure k8s context
       - name: Set aks context
         uses: azure/aks-set-context@v3.2
@@ -120,7 +120,8 @@ jobs:
           resource-group: "${{ inputs.aks_resource_group }}"
           cluster-name: "${{ inputs.aks_cluster_name }}"
           subscription: "${{ secrets.aks_subscription_id }}"
-          use-kubelogin: true 
+          use-kubelogin: true
+          admin: false
         id: login
       - name: Bake helm template
         uses: Azure/k8s-bake@v2.2
