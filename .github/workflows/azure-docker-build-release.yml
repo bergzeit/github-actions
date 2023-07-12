@@ -46,7 +46,7 @@ on:
           type=schedule
           type=sha  # short commit hash
           type=ref,event=tag  # raw tag
-          type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'develop') }} 
+          type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'develop') }}
           type=raw,value=latest,enable={{ is_default_branch }} # "latest" on project-specific default branch
       azure_tenant_id:
         description: Tenant ID of the Azure App Registration associated with this repository
@@ -63,6 +63,10 @@ on:
       build_args:
         type: string
         required: false
+      docker_context:
+        type: string
+        required: false
+        default: .
     secrets:
       GH_ACCESS_TOKEN:
         description: The github access token for private repository access
@@ -106,7 +110,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
         with:
-          context: .
+          context: ${{ inputs.docker_context }}
           target: ${{ inputs.image_build_target }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}

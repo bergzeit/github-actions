@@ -42,6 +42,10 @@ on:
           type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'master') }} # "latest" on master branch
           type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'develop') }} # "latest" on develop branch
           type=raw,value=latest,enable={{ is_default_branch }}  # "latest" on project-specific default branch
+      docker_context:
+        type: string
+        required: false
+        default: .
     secrets:
       GH_ACCESS_TOKEN:
         description: The github access token for private repository access
@@ -82,7 +86,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
         with:
-          context: .
+          context: ${{ inputs.docker_context }}
           target: ${{ inputs.image_build_target }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
