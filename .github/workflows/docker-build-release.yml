@@ -46,6 +46,9 @@ on:
         type: string
         required: false
         default: .
+      build_args:
+        type: string
+        required: false
     secrets:
       GH_ACCESS_TOKEN:
         description: The github access token for private repository access
@@ -95,3 +98,4 @@ jobs:
           cache-to: type=gha
           build-args: |
             GH_ACCESS_TOKEN=${{ secrets.GH_ACCESS_TOKEN }}
+            ${{ inputs.build_args }}

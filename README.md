@@ -1,3 +1,15 @@
+# Changelog
+
+Important changes according to the version they are release in.
+
+## 2.1.3
+
+- Workflow: docker-build-release.yml
+  -  Adds an optional input argument `build_args` for the docker build-args
+     argument. This enables us to use more docker file arguments in the novomind
+     hosted services.
+
+
 # Workflows
 ## `azure-docker-build-release.yml`
 Build a docker image and push it to Azure container registry. See the workflow file itself for possible/required inputs and secrets.
