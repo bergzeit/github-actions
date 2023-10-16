@@ -11,6 +11,10 @@ name: Build container and run tests
 on:
   workflow_call:
     inputs:
+      options:
+        description: 'Options for the docker run command'
+        type: string
+        required: false
       command:
         description: Test command to run inside the container
         type: string
@@ -56,4 +60,4 @@ jobs:
             GH_ACCESS_TOKEN=${{ secrets.GH_ACCESS_TOKEN }}
 
       - name: Run tests
-        run: docker run ${{ inputs.image_name }} ${{ inputs.command }}
+        run: docker run ${{ inputs.options}} ${{ inputs.image_name }} ${{ inputs.command }}
