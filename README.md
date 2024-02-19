@@ -2,6 +2,10 @@
 
 Important changes according to the version they are release in.
 
+## 2.2.0
+
+- Updates all github actions in the workflow
+
 ## 2.1.3
 
 - Workflow: docker-build-release.yml
