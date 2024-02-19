@@ -24,7 +24,11 @@ This workflow authenticates with Azure through OIDC using OAuth2 client credenti
 Build a docker image and push it to a container registry. See the workflow file itself for possible/required inputs and secrets.
 
 ## `docker-test.yml`
-Build a docker container and run tests inside that container. See the workflow file itself for possible/required inputs and secrets.
+**DEPRECATED!**
+Do not use this action anymore. Implement a dedicated go test workflow or copy
+it from a project that has a test workflow already implemented.
+
+~~Build a docker container and run tests inside that container. See the workflow file itself for possible/required inputs and secrets.~~
 
 ## `deploy-aks.yml`
 Deploys the manifests stored in the repository into an azure aks cluster. See
