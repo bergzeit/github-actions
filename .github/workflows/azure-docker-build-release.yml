@@ -85,15 +85,15 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-tags: true
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
 
       - name: Authenticate with Azure
-        uses: Azure/login@v1.4.6
+        uses: Azure/login@v1
         with:
           creds: '{"clientId":"${{ inputs.azure_client_id }}","clientSecret":"${{ secrets.azure_client_secret }}","subscriptionId":"${{ inputs.azure_subscription_id }}","tenantId":"${{ inputs.azure_tenant_id }}"}'
 
@@ -104,13 +104,13 @@ jobs:
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@v4
+        uses: docker/metadata-action@v5
         with:
           images: ${{ inputs.registry_url }}/${{ inputs.image_name }}
           tags: ${{ inputs.image_tag_rules }}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v5
         with:
           context: ${{ inputs.docker_context }}
           target: ${{ inputs.image_build_target }}

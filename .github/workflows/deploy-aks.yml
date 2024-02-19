@@ -97,25 +97,25 @@ jobs:
       actions: read
     steps:
       # first check out the repository for file access to k8s manifests in the deploy process
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       # install the kubectl cmd line tool because it is required in later steps
       - name: Set up kubectl
-        uses: azure/setup-kubectl@v3.0
+        uses: azure/setup-kubectl@v4.0.0 # if you read this, please check if https://github.com/Azure/setup-kubectl/issues/100 is solved then set from v4.0.0 to v4 accordingly
         with:
           version: "latest"
         id: install
       # log in to azure for the following context creation
       - name: Authenticate with Azure
-        uses: Azure/login@v1.4.6
+        uses: Azure/login@v1
         with:
           creds: '{"clientId":"${{ secrets.azure_client_id }}","clientSecret":"${{ secrets.azure_client_secret }}","subscriptionId":"${{ secrets.aks_subscription_id }}","tenantId":"${{ secrets.azure_tenant_id }}"}'
       - name: Set up kubelogin for non-interactive login
         uses: azure/use-kubelogin@v1
         with:
-           kubelogin-version: 'v0.0.30' #TODO should be updated regularly 
+           kubelogin-version: 'v0.1.0' #TODO should be updated regularly 
           # set an active azure k8s context
       - name: Set aks context
-        uses: azure/aks-set-context@v3.2
+        uses: azure/aks-set-context@v3
         with:
           resource-group: "${{ inputs.aks_resource_group }}"
           cluster-name: "${{ inputs.aks_cluster_name }}"
@@ -124,7 +124,7 @@ jobs:
           admin: false
         id: login
       - name: Bake helm template
-        uses: Azure/k8s-bake@v2.2
+        uses: Azure/k8s-bake@v2
         with:
           renderEngine: "helm"
           helmChart: "${{ inputs.helm_chart }}"
@@ -138,7 +138,7 @@ jobs:
         id: bake
       # deploy to the aks cluster
       - name: Deploy to aks
-        uses: Azure/k8s-deploy@v4.5
+        uses: Azure/k8s-deploy@v4
         with:
           manifests: ${{ steps.bake.outputs.manifestsBundle }}
           action: deploy
