@@ -63,6 +63,10 @@ on:
       build_args:
         type: string
         required: false
+      git_checkout_tags:
+        type: boolean
+        required: false
+        default: true
       docker_context:
         type: string
         required: false
@@ -87,7 +91,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-tags: true
+          fetch-tags: ${{ inputs.git_checkout_tags }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
