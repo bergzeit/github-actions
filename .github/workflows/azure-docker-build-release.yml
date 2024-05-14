@@ -90,8 +90,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-tags: ${{ inputs.git_checkout_tags }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
